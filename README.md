@@ -139,18 +139,15 @@ legend{font-weight:600;padding:0 6px}
 </main>
 
 <script>
-/* ========================================================
-   الربط المباشر مع بوت ومجموعة مركز يقين
-======================================================== */
+/* الربط الفعلي مع بوت ومجموعة وزارة مشروع يقين */
 const BOT_TOKEN = "8690240015:AAG425wR-YD7KqtDDN1XRlIcKa3b6lsWJ54";
-const GROUP_ID = "-1004346365421"; // مجموعة: وزارة مشروع يقين
+const GROUP_ID = "-1004346365421";
 
 const tg = window.Telegram && window.Telegram.WebApp;
 if (tg) {
   try { tg.ready(); tg.expand(); } catch (e) {}
 }
 
-// قراءة بيانات حساب تيليجرام الحقيقي
 const user = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || {
   id: 869024001,
   first_name: "مستخدم",
@@ -206,13 +203,12 @@ $("#stHome").onclick = goHome;
 $("#goStatus").onclick = openStatus;
 $("#refresh").onclick = openStatus;
 
-/* إظهار ولي الأمر لمن هم دون 18 */
 $("#age").addEventListener("input", e => {
   const v = parseInt(e.target.value, 10);
   $("#guardian").hidden = !(v > 0 && v < 18);
 });
 
-/* الإرسال المباشر إلى مجموعة تيليجرام */
+/* إرسال الطلب مباشرة للمجموعة */
 $("#f").addEventListener("submit", async e => {
   e.preventDefault();
   const err = $("#err"); err.textContent = "";
@@ -231,7 +227,7 @@ $("#f").addEventListener("submit", async e => {
   else if (!$("#agree").checked) m = "وافق على الإقرار أولًا.";
   if (m) { err.textContent = m; return; }
 
-  const btn = $("#sbtn"); btn.disabled = true; btn.textContent = "جارٍ إرسال الطلب إلى المجموعة...";
+  const btn = $("#sbtn"); btn.disabled = true; btn.textContent = "جارٍ إرسال الطلب للمجموعة...";
 
   const textMsg =
     `📥 <b>طلب جديد #${user.id}</b>\n` +
@@ -261,7 +257,6 @@ $("#f").addEventListener("submit", async e => {
       throw new Error(resData.description || "فشل الإرسال للبوت");
     }
 
-    // حفظ الطلب في ذاكرة المتصفح
     const today = new Date().toLocaleDateString("ar-EG");
     localStorage.setItem("yaqeen_request_" + user.id, JSON.stringify({
       status: "pending",
@@ -281,7 +276,6 @@ $("#f").addEventListener("submit", async e => {
   }
 });
 
-/* عرض حالة الطلب */
 function openStatus() {
   chip("#chip3"); show("statusSec");
   const box = $("#stBox"); box.innerHTML = "";
