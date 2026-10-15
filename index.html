@@ -69,7 +69,7 @@ legend{font-weight:600;padding:0 6px}
 <section id="home" hidden>
   <div class="chip" id="chip1"></div>
   <h1>ادعم موهبتك</h1>
-  <p>قدّم طلبك الآن وسيقوم فريق مركز يقين بمراجعته في المجموعة.</p>
+  <p>قدّم طلبك الآن وسيقوم فريق مركز يقين بمراجعته في المجموعة والرد عليك.</p>
   <button id="goForm">تقديم طلب جديد</button>
   <button id="goStatus" class="alt">متابعة حالة طلبي</button>
 </section>
@@ -139,9 +139,11 @@ legend{font-weight:600;padding:0 6px}
 </main>
 
 <script>
-/* الربط الفعلي مع بوت ومجموعة وزارة مشروع يقين */
+/* ========================================================
+   الربط المباشر مع بوت ومجموعة مركز يقين
+======================================================== */
 const BOT_TOKEN = "8690240015:AAG425wR-YD7KqtDDN1XRlIcKa3b6lsWJ54";
-const GROUP_ID = "-1004346365421";
+const GROUP_ID = "-1004346365421"; // مجموعة وزارة مشروع يقين
 
 const tg = window.Telegram && window.Telegram.WebApp;
 if (tg) {
@@ -208,7 +210,7 @@ $("#age").addEventListener("input", e => {
   $("#guardian").hidden = !(v > 0 && v < 18);
 });
 
-/* إرسال الطلب مباشرة للمجموعة */
+/* إرسال الطلب مع أزرار القبول والرفض */
 $("#f").addEventListener("submit", async e => {
   e.preventDefault();
   const err = $("#err"); err.textContent = "";
@@ -230,8 +232,9 @@ $("#f").addEventListener("submit", async e => {
   const btn = $("#sbtn"); btn.disabled = true; btn.textContent = "جارٍ إرسال الطلب للمجموعة...";
 
   const textMsg =
-    `📥 <b>طلب جديد #${user.id}</b>\n` +
+    `📥 <b>طلب انضمام جديد #${user.id}</b>\n` +
     `👤 <b>المتقدم:</b> ${fullName} ${user.username ? "(@" + user.username + ")" : ""}\n` +
+    `🆔 <b>آيدي المتقدم:</b> <code>${user.id}</code>\n` +
     `🎂 <b>العمر:</b> ${age} سنة\n` +
     (age < 18 ? `👨‍👩‍👦 <b>ولي الأمر:</b> ${v("#gname")}\n` : "") +
     `⭐ <b>الموهبة:</b> ${v("#field")}\n` +
@@ -248,7 +251,15 @@ $("#f").addEventListener("submit", async e => {
       body: JSON.stringify({
         chat_id: GROUP_ID,
         text: textMsg,
-        parse_mode: "HTML"
+        parse_mode: "HTML",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: "✅ قبول", callback_data: "ok:" + user.id },
+              { text: "❌ رفض", callback_data: "no:" + user.id }
+            ]
+          ]
+        }
       })
     });
 
