@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مركز يقين | دعم المواهب الشابة</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:var(--tg-theme-bg-color,#fbfaf7);--tx:var(--tg-theme-text-color,#1c2430);--hint:var(--tg-theme-hint-color,#6b7685);--card:var(--tg-theme-secondary-bg-color,#eef1f5);--btn:var(--tg-theme-button-color,#1d3a5f);--btx:var(--tg-theme-button-text-color,#fff);--gold:#c9962b;--ok:#1a9d5a;--no:#d64545;--wait:#d98a1c;--line:rgba(127,127,127,.28)}
+@media(prefers-color-scheme:dark){:root{--bg:var(--tg-theme-bg-color,#16191f);--tx:var(--tg-theme-text-color,#eef0f3);--card:var(--tg-theme-secondary-bg-color,#222831);--hint:var(--tg-theme-hint-color,#9aa5b4);--btn:var(--tg-theme-button-color,#3b78c4)}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI","Noto Naskh Arabic",Tahoma,sans-serif;line-height:1.7;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+main{max-width:520px;margin:0 auto}
+section[hidden]{display:none}
+h1{font-size:1.5rem;margin:.2rem 0 .4rem;line-height:1.4}
+h2{font-size:1.15rem;margin:0 0 .6rem}
+p{margin:.2rem 0 1rem;color:var(--hint)}
+.brand{border-inline-start:4px solid var(--gold);padding-inline-start:12px;margin-bottom:20px}
+.brand b{display:block;font-size:.85rem;color:var(--gold)}
+.avatar{width:84px;height:84px;border-radius:50%;object-fit:cover;background:var(--btn);color:var(--btx);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;border:3px solid var(--gold)}
+.chip{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:14px;padding:8px 12px;margin-bottom:18px}
+.chip .avatar{width:38px;height:38px;font-size:1rem;border-width:2px}
+.chip small{color:var(--hint);display:block;line-height:1.3}
+.ucard{background:var(--card);border-radius:16px;padding:20px;text-align:center;margin:16px 0}
+.ucard .avatar{margin:0 auto 10px}
+.ucard .tick{color:var(--ok);font-weight:700;margin-top:6px}
+button,.btn{font:inherit;font-weight:600;width:100%;border:0;border-radius:12px;padding:13px;background:var(--btn);color:var(--btx);cursor:pointer;margin-top:10px}
+button.alt{background:var(--card);color:var(--tx)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+label{display:block;font-weight:600;margin:16px 0 6px}
+label i{font-style:normal;color:var(--no)}
+input,select,textarea{font:inherit;width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--tx)}
+textarea{min-height:92px;resize:vertical}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:8px 0}
+.chk input{width:20px;height:20px;margin-top:5px;flex:none}
+fieldset{border:1px solid var(--line);border-radius:12px;margin:16px 0 0;padding:6px 12px 10px}
+legend{font-weight:600;padding:0 6px}
+.err{color:var(--no);font-size:.9rem;min-height:1.2em;margin-top:10px}
+.status{border-radius:16px;padding:20px;text-align:center;margin:12px 0;border:2px solid var(--line)}
+.status .ic{font-size:2.4rem;line-height:1.2}
+.status.pending{border-color:var(--wait)}.status.approved{border-color:var(--ok)}.status.rejected{border-color:var(--no)}
+.reason{background:var(--card);border-radius:10px;padding:12px;margin-top:12px;text-align:right;color:var(--tx)}
+.reason small{display:block;color:var(--hint)}
+.demo{background:var(--card);border:1px dashed var(--gold);border-radius:10px;padding:8px 12px;font-size:.85rem;color:var(--hint);margin-bottom:14px}
+</style>
+</head>
+<body>
+<main>
+
+<div class="brand"><b>مركز يقين للدعم الفني</b><span>برنامج دعم المواهب الشابة</span></div>
+<div id="demoNote" class="demo" hidden>وضع تجريبي: الطلبات تُحفظ على جهازك فقط. اربط الخادم في CONFIG.API_URL للإرسال الفعلي.</div>
+
+<!-- 1) التحقق -->
+<section id="verify">
+  <h1>أهلًا بك</h1>
+  <p>اضغط للتحقق من حسابك على تيليجرام قبل التقديم.</p>
+  <div id="ucard" class="ucard" hidden>
+    <div id="uav"></div>
+    <h2 id="uname" style="margin:4px 0 0"></h2>
+    <div id="uuser" style="color:var(--hint)" dir="ltr"></div>
+    <div class="tick">تم التحقق من الحساب</div>
+  </div>
+  <button id="vbtn">تحقق من حسابي</button>
+  <button id="vnext" class="alt" hidden>متابعة</button>
+</section>
+
+<!-- 2) الرئيسية -->
+<section id="home" hidden>
+  <div class="chip" id="chip1"></div>
+  <h1>ادعم موهبتك</h1>
+  <p>قدّم طلبك للانضمام إلى برنامج دعم المواهب الشابة، وسنراجعه ونرد عليك هنا.</p>
+  <button id="goForm">تقديم طلب جديد</button>
+  <button id="goStatus" class="alt">متابعة حالة طلبي</button>
+</section>
+
+<!-- 3) نموذج التسجيل -->
+<section id="formSec" hidden>
+  <div class="chip" id="chip2"></div>
+  <h1>طلب الانضمام</h1>
+  <p>الحقول المعلّمة بنجمة مطلوبة.</p>
+  <form id="f" novalidate>
+    <label for="age">العمر <i>*</i></label>
+    <input id="age" name="age" type="number" inputmode="numeric" min="6" max="35" placeholder="مثال: 16">
+
+    <div id="guardian" hidden>
+      <label for="gname">اسم ولي الأمر <i>*</i></label>
+      <input id="gname" name="guardian_name" autocomplete="off">
+      <label class="chk"><input type="checkbox" id="gok"><span>أوافق، بصفتي ولي الأمر، على مشاركة ابني/ابنتي في البرنامج.</span></label>
+    </div>
+
+    <label for="field">ما هي موهبتك؟ <i>*</i></label>
+    <input id="field" name="talent_field" autocomplete="off" placeholder="اكتبها بنفسك، مثال: الخط العربي، كرة القدم، التصميم...">
+
+    <label for="desc">صف موهبتك <i>*</i></label>
+    <textarea id="desc" name="talent_desc" placeholder="ماذا تفعل؟ ومنذ متى بدأت؟"></textarea>
+
+    <label for="exp">مستوى الخبرة <i>*</i></label>
+    <select id="exp" name="experience">
+      <option value="">اختر</option><option>مبتدئ</option><option>أقل من سنة</option>
+      <option>من سنة إلى 3 سنوات</option><option>أكثر من 3 سنوات</option>
+    </select>
+
+    <label for="ach">إنجازات أو مشاركات سابقة</label>
+    <textarea id="ach" name="achievements" placeholder="مسابقات، معارض، شهادات... (اختياري)"></textarea>
+
+    <fieldset>
+      <legend>نوع الدعم المطلوب <i style="color:var(--no);font-style:normal">*</i></legend>
+      <label class="chk"><input type="checkbox" name="support" value="تدريب"><span>تدريب وورش عمل</span></label>
+      <label class="chk"><input type="checkbox" name="support" value="إرشاد"><span>إرشاد من مختص</span></label>
+      <label class="chk"><input type="checkbox" name="support" value="معدات"><span>أدوات ومعدات</span></label>
+      <label class="chk"><input type="checkbox" name="support" value="نشر"><span>نشر وتسويق أعمالي</span></label>
+      <label class="chk"><input type="checkbox" name="support" value="تمويل"><span>دعم مالي</span></label>
+    </fieldset>
+
+    <label for="goal">ماذا تريد أن تحقق خلال سنة؟ <i>*</i></label>
+    <textarea id="goal" name="goal"></textarea>
+
+    <label class="chk" style="margin-top:18px"><input type="checkbox" id="agree"><span>أقرّ بأن المعلومات صحيحة، وأوافق على مراجعتها من فريق المركز.</span></label>
+
+    <div class="err" id="err" role="alert"></div>
+    <button type="submit" id="sbtn">إرسال الطلب</button>
+    <button type="button" class="alt" id="cancel">رجوع</button>
+  </form>
+</section>
+
+<!-- 4) حالة الطلب -->
+<section id="statusSec" hidden>
+  <div class="chip" id="chip3"></div>
+  <h1>حالة طلبي</h1>
+  <div id="stBox"></div>
+  <button id="refresh" class="alt">تحديث الحالة</button>
+  <button id="stHome" class="alt">الصفحة الرئيسية</button>
+  <div id="demoCtl" hidden>
+    <p style="margin-top:16px">تحكم تجريبي لمعاينة النتيجة:</p>
+    <button id="dOk" class="alt">معاينة: موافقة</button>
+    <button id="dNo" class="alt">معاينة: رفض مع سبب</button>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ===== الإعدادات ===== */
+const CONFIG = {
+  API_URL: ""       // رابط الخادم (البوت). اتركه فارغًا للوضع التجريبي.
+};
+/* الخادم المتوقع:
+   POST {API_URL}/submit  (json: initData + حقول النموذج) -> {ok:true}
+   POST {API_URL}/status  (json: {initData}) -> {status:"none|pending|approved|rejected", reason?, date?}
+   الخادم يتحقق من initData ثم يرسل الملف والبيانات إلى المجموعة الخاصة مع زري قبول/رفض. */
+
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) { try { tg.ready(); tg.expand(); } catch (e) {} }
+const demo = !CONFIG.API_URL;
+const user = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ||
+  { id: 0, first_name: "مستخدم", last_name: "تجريبي", username: "demo_user" };
+const $ = s => document.querySelector(s);
+const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ");
+
+if (demo) $("#demoNote").hidden = false;
+
+function avatar(el, cls) {
+  el.innerHTML = "";
+  if (user.photo_url) {
+    const i = document.createElement("img");
+    i.src = user.photo_url; i.alt = ""; i.className = "avatar";
+    i.onerror = () => { el.innerHTML = ""; el.appendChild(initial()); };
+    el.appendChild(i);
+  } else el.appendChild(initial());
+}
+function initial() {
+  const d = document.createElement("div");
+  d.className = "avatar"; d.textContent = (user.first_name || "?").charAt(0);
+  return d;
+}
+function chip(id) {
+  const c = $(id); c.innerHTML = "";
+  const a = document.createElement("div"); avatar(a);
+  const t = document.createElement("div");
+  const n = document.createElement("div"); n.textContent = fullName;
+  const s = document.createElement("small"); s.dir = "ltr"; s.style.textAlign = "right";
+  s.textContent = user.username ? "@" + user.username : "";
+  t.append(n, s); c.append(a, t);
+}
+function show(id) {
+  document.querySelectorAll("section").forEach(s => s.hidden = s.id !== id);
+  window.scrollTo(0, 0);
+}
+
+/* التحقق */
+$("#vbtn").onclick = () => {
+  avatar($("#uav"));
+  $("#uname").textContent = fullName;
+  $("#uuser").textContent = user.username ? "@" + user.username : "بدون اسم مستخدم";
+  $("#ucard").hidden = false; $("#vbtn").hidden = true; $("#vnext").hidden = false;
+};
+$("#vnext").onclick = () => goHome();
+function goHome() { chip("#chip1"); show("home"); }
+$("#goForm").onclick = () => { chip("#chip2"); show("formSec"); };
+$("#cancel").onclick = goHome;
+$("#stHome").onclick = goHome;
+$("#goStatus").onclick = openStatus;
+$("#refresh").onclick = openStatus;
+
+/* العمر وولي الأمر */
+$("#age").addEventListener("input", e => {
+  const v = parseInt(e.target.value, 10);
+  $("#guardian").hidden = !(v > 0 && v < 18);
+});
+
+/* التخزين التجريبي */
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem("yq_req") || "null"); } catch (e) { return null; } },
+  set(v) { try { localStorage.setItem("yq_req", JSON.stringify(v)); } catch (e) {} }
+};
+
+/* الإرسال */
+$("#f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = $("#err"); err.textContent = "";
+  const v = id => $(id).value.trim();
+  const age = parseInt(v("#age"), 10);
+  const supports = [...document.querySelectorAll('input[name="support"]:checked')].map(x => x.value);
+  let m = "";
+  if (!(age >= 6 && age <= 35)) m = "أدخل عمرًا صحيحًا بين 6 و35.";
+  else if (age < 18 && (!v("#gname") || !$("#gok").checked)) m = "اسم ولي الأمر وموافقته مطلوبان لمن هم دون 18.";
+  else if (!v("#field")) m = "اكتب موهبتك.";
+  else if (v("#desc").length < 20) m = "صف موهبتك بعشرين حرفًا على الأقل.";
+  else if (!$("#exp").value) m = "اختر مستوى خبرتك.";
+  else if (!supports.length) m = "اختر نوع دعم واحدًا على الأقل.";
+  else if (!v("#goal")) m = "اكتب هدفك خلال سنة.";
+  else if (!$("#agree").checked) m = "وافق على الإقرار أولًا.";
+  if (m) { err.textContent = m; return; }
+
+  const btn = $("#sbtn"); btn.disabled = true; btn.textContent = "جارٍ الإرسال...";
+  try {
+    if (demo) {
+      store.set({ status: "pending", date: new Date().toLocaleDateString("ar") });
+    } else {
+      const data = {
+        initData: tg ? tg.initData : "",
+        name: fullName, username: user.username || "",
+        age, talent: v("#field"), description: v("#desc"),
+        experience: $("#exp").value, achievements: v("#ach"),
+        supports, goal: v("#goal"),
+        guardian: age < 18 ? v("#gname") : ""
+      };
+      const r = await fetch(CONFIG.API_URL + "/submit", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      if (!r.ok) throw new Error("http " + r.status);
+    }
+    $("#f").reset(); $("#guardian").hidden = true;
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
+    openStatus();
+  } catch (x) {
+    err.textContent = "تعذر إرسال الطلب. تحقق من الاتصال وحاول مرة أخرى.";
+  } finally { btn.disabled = false; btn.textContent = "إرسال الطلب"; }
+});
+
+/* الحالة */
+async function getStatus() {
+  if (demo) return store.get() || { status: "none" };
+  const r = await fetch(CONFIG.API_URL + "/status", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ initData: tg ? tg.initData : "" })
+  });
+  if (!r.ok) throw new Error("http " + r.status);
+  return r.json();
+}
+async function openStatus() {
+  chip("#chip3"); show("statusSec");
+  $("#demoCtl").hidden = !demo;
+  const box = $("#stBox"); box.textContent = "جارٍ التحميل...";
+  try { render(await getStatus()); }
+  catch (e) { box.textContent = "تعذر تحميل الحالة. حاول التحديث بعد قليل."; }
+}
+function render(r) {
+  const box = $("#stBox"); box.innerHTML = "";
+  const d = document.createElement("div");
+  const ic = document.createElement("div"); ic.className = "ic";
+  const h = document.createElement("h2");
+  const p = document.createElement("p");
+  if (r.status === "pending") {
+    d.className = "status pending"; ic.textContent = "⏳"; h.textContent = "طلبك قيد المراجعة";
+    p.textContent = "سيصلك القرار هنا بعد مراجعة الفريق.";
+  } else if (r.status === "approved") {
+    d.className = "status approved"; ic.textContent = "✅"; h.textContent = "تمت الموافقة على طلبك";
+    p.textContent = "مبروك! سيتواصل معك فريق المركز قريبًا.";
+  } else if (r.status === "rejected") {
+    d.className = "status rejected"; ic.textContent = "❌"; h.textContent = "لم تتم الموافقة على طلبك";
+    p.textContent = "يمكنك تعديل بياناتك وتقديم طلب جديد.";
+  } else {
+    d.className = "status"; ic.textContent = "📄"; h.textContent = "لا يوجد طلب بعد";
+    p.textContent = "قدّم طلبك الأول ليظهر هنا.";
+  }
+  d.append(ic, h, p);
+  if (r.status === "rejected") {
+    const b = document.createElement("div"); b.className = "reason";
+    const s = document.createElement("small"); s.textContent = "سبب الرفض";
+    const t = document.createElement("div"); t.textContent = r.reason || "لم يُذكر سبب.";
+    b.append(s, t); d.append(b);
+    const again = document.createElement("button"); again.textContent = "تقديم طلب جديد";
+    again.onclick = () => { chip("#chip2"); show("formSec"); };
+    d.append(again);
+  }
+  if (r.status === "none") {
+    const go = document.createElement("button"); go.textContent = "تقديم طلب";
+    go.onclick = () => { chip("#chip2"); show("formSec"); };
+    d.append(go);
+  }
+  if (r.date) { const dt = document.createElement("small"); dt.style.color = "var(--hint)"; dt.textContent = "تاريخ الطلب: " + r.date; d.append(dt); }
+  box.append(d);
+}
+$("#dOk").onclick = () => { const r = store.get(); if (r) { r.status = "approved"; store.set(r); openStatus(); } };
+$("#dNo").onclick = () => { const r = store.get(); if (r) { r.status = "rejected"; r.reason = "الملف المرفق غير واضح. أرفق عملًا أوضح يعرض موهبتك."; store.set(r); openStatus(); } };
+</script>
+</body>
+</html>
