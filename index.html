@@ -25,33 +25,32 @@ p{margin:.2rem 0 1rem;color:var(--hint)}
 .ucard{background:var(--card);border-radius:16px;padding:20px;text-align:center;margin:16px 0}
 .ucard .avatar{margin:0 auto 10px}
 .ucard .tick{color:var(--ok);font-weight:700;margin-top:6px}
-button,.btn{font:inherit;font-weight:600;width:100%;border:0;border-radius:12px;padding:13px;background:var(--btn);color:var(--btx);cursor:pointer;margin-top:10px}
+button,.btn{font:inherit;font-weight:600;width:100%;border:0;border-radius:12px;padding:13px;background:var(--btn);color:var(--btx);cursor:pointer;margin-top:10px;transition:opacity .2s}
+button:hover{opacity:.9}
 button.alt{background:var(--card);color:var(--tx)}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 label{display:block;font-weight:600;margin:16px 0 6px}
 label i{font-style:normal;color:var(--no)}
 input,select,textarea{font:inherit;width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--tx)}
 textarea{min-height:92px;resize:vertical}
-.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:8px 0}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:8px 0;cursor:pointer}
 .chk input{width:20px;height:20px;margin-top:5px;flex:none}
 fieldset{border:1px solid var(--line);border-radius:12px;margin:16px 0 0;padding:6px 12px 10px}
 legend{font-weight:600;padding:0 6px}
 .err{color:var(--no);font-size:.9rem;min-height:1.2em;margin-top:10px}
 .status{border-radius:16px;padding:20px;text-align:center;margin:12px 0;border:2px solid var(--line)}
 .status .ic{font-size:2.4rem;line-height:1.2}
-.status.pending{border-color:var(--wait)}.status.approved{border-color:var(--ok)}.status.rejected{border-color:var(--no)}
+.status.pending{border-color:var(--wait);background:rgba(217,138,28,.08)}.status.approved{border-color:var(--ok);background:rgba(26,157,90,.08)}.status.rejected{border-color:var(--no);background:rgba(214,69,69,.08)}
 .reason{background:var(--card);border-radius:10px;padding:12px;margin-top:12px;text-align:right;color:var(--tx)}
 .reason small{display:block;color:var(--hint)}
-.demo{background:var(--card);border:1px dashed var(--gold);border-radius:10px;padding:8px 12px;font-size:.85rem;color:var(--hint);margin-bottom:14px}
 </style>
 </head>
 <body>
 <main>
 
 <div class="brand"><b>مركز يقين للدعم الفني</b><span>برنامج دعم المواهب الشابة</span></div>
-<div id="demoNote" class="demo" hidden>وضع تجريبي: الطلبات تُحفظ على جهازك فقط. اربط الخادم في CONFIG.API_URL للإرسال الفعلي.</div>
 
-<!-- 1) التحقق -->
+<!-- 1) شاشة التحقق -->
 <section id="verify">
   <h1>أهلًا بك</h1>
   <p>اضغط للتحقق من حسابك على تيليجرام قبل التقديم.</p>
@@ -59,17 +58,18 @@ legend{font-weight:600;padding:0 6px}
     <div id="uav"></div>
     <h2 id="uname" style="margin:4px 0 0"></h2>
     <div id="uuser" style="color:var(--hint)" dir="ltr"></div>
-    <div class="tick">تم التحقق من الحساب</div>
+    <div class="tick">تم التحقق من الحساب بنجاح ✓</div>
   </div>
+  <div class="err" id="verr" role="alert"></div>
   <button id="vbtn">تحقق من حسابي</button>
-  <button id="vnext" class="alt" hidden>متابعة</button>
+  <button id="vnext" class="alt" hidden>متابعة إلى البرنامج</button>
 </section>
 
 <!-- 2) الرئيسية -->
 <section id="home" hidden>
   <div class="chip" id="chip1"></div>
   <h1>ادعم موهبتك</h1>
-  <p>قدّم طلبك للانضمام إلى برنامج دعم المواهب الشابة، وسنراجعه ونرد عليك هنا.</p>
+  <p>قدّم طلبك الآن وسيقوم فريق مركز يقين بمراجعته في المجموعة.</p>
   <button id="goForm">تقديم طلب جديد</button>
   <button id="goStatus" class="alt">متابعة حالة طلبي</button>
 </section>
@@ -78,27 +78,30 @@ legend{font-weight:600;padding:0 6px}
 <section id="formSec" hidden>
   <div class="chip" id="chip2"></div>
   <h1>طلب الانضمام</h1>
-  <p>الحقول المعلّمة بنجمة مطلوبة.</p>
+  <p>الحقول المعلّمة بنجمة (*) مطلوبة.</p>
   <form id="f" novalidate>
     <label for="age">العمر <i>*</i></label>
     <input id="age" name="age" type="number" inputmode="numeric" min="6" max="35" placeholder="مثال: 16">
 
     <div id="guardian" hidden>
       <label for="gname">اسم ولي الأمر <i>*</i></label>
-      <input id="gname" name="guardian_name" autocomplete="off">
+      <input id="gname" name="guardian_name" autocomplete="off" placeholder="الاسم الكامل لولي الأمر">
       <label class="chk"><input type="checkbox" id="gok"><span>أوافق، بصفتي ولي الأمر، على مشاركة ابني/ابنتي في البرنامج.</span></label>
     </div>
 
     <label for="field">ما هي موهبتك؟ <i>*</i></label>
-    <input id="field" name="talent_field" autocomplete="off" placeholder="اكتبها بنفسك، مثال: الخط العربي، كرة القدم، التصميم...">
+    <input id="field" name="talent_field" autocomplete="off" placeholder="اكتبها بنفسك: الخط العربي، كرة القدم، البرمجة...">
 
     <label for="desc">صف موهبتك <i>*</i></label>
-    <textarea id="desc" name="talent_desc" placeholder="ماذا تفعل؟ ومنذ متى بدأت؟"></textarea>
+    <textarea id="desc" name="talent_desc" placeholder="ماذا تفعل؟ ومنذ متى بدأت؟ (20 حرفاً على الأقل)"></textarea>
 
     <label for="exp">مستوى الخبرة <i>*</i></label>
     <select id="exp" name="experience">
-      <option value="">اختر</option><option>مبتدئ</option><option>أقل من سنة</option>
-      <option>من سنة إلى 3 سنوات</option><option>أكثر من 3 سنوات</option>
+      <option value="">اختر</option>
+      <option>مبتدئ</option>
+      <option>أقل من سنة</option>
+      <option>من سنة إلى 3 سنوات</option>
+      <option>أكثر من 3 سنوات</option>
     </select>
 
     <label for="ach">إنجازات أو مشاركات سابقة</label>
@@ -114,9 +117,9 @@ legend{font-weight:600;padding:0 6px}
     </fieldset>
 
     <label for="goal">ماذا تريد أن تحقق خلال سنة؟ <i>*</i></label>
-    <textarea id="goal" name="goal"></textarea>
+    <textarea id="goal" name="goal" placeholder="هدفك المستقبلي..."></textarea>
 
-    <label class="chk" style="margin-top:18px"><input type="checkbox" id="agree"><span>أقرّ بأن المعلومات صحيحة، وأوافق على مراجعتها من فريق المركز.</span></label>
+    <label class="chk" style="margin-top:18px"><input type="checkbox" id="agree"><span>أقرّ بأن المعلومات صحيحة، وأوافق على إرسالها إلى إدارة مركز يقين.</span></label>
 
     <div class="err" id="err" role="alert"></div>
     <button type="submit" id="sbtn">إرسال الطلب</button>
@@ -131,36 +134,31 @@ legend{font-weight:600;padding:0 6px}
   <div id="stBox"></div>
   <button id="refresh" class="alt">تحديث الحالة</button>
   <button id="stHome" class="alt">الصفحة الرئيسية</button>
-  <div id="demoCtl" hidden>
-    <p style="margin-top:16px">تحكم تجريبي لمعاينة النتيجة:</p>
-    <button id="dOk" class="alt">معاينة: موافقة</button>
-    <button id="dNo" class="alt">معاينة: رفض مع سبب</button>
-  </div>
 </section>
 
 </main>
 
 <script>
-/* ===== الإعدادات ===== */
-const CONFIG = {
-  API_URL: ""       // رابط الخادم (البوت). اتركه فارغًا للوضع التجريبي.
-};
-/* الخادم المتوقع:
-   POST {API_URL}/submit  (json: initData + حقول النموذج) -> {ok:true}
-   POST {API_URL}/status  (json: {initData}) -> {status:"none|pending|approved|rejected", reason?, date?}
-   الخادم يتحقق من initData ثم يرسل الملف والبيانات إلى المجموعة الخاصة مع زري قبول/رفض. */
+/* الربط الفعلي مع بوت ومجموعة وزارة مشروع يقين */
+const BOT_TOKEN = "8690240015:AAG425wR-YD7KqtDDN1XRlIcKa3b6lsWJ54";
+const GROUP_ID = "-1004346365421";
 
 const tg = window.Telegram && window.Telegram.WebApp;
-if (tg) { try { tg.ready(); tg.expand(); } catch (e) {} }
-const demo = !CONFIG.API_URL;
-const user = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ||
-  { id: 0, first_name: "مستخدم", last_name: "تجريبي", username: "demo_user" };
+if (tg) {
+  try { tg.ready(); tg.expand(); } catch (e) {}
+}
+
+const user = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || {
+  id: 869024001,
+  first_name: "مستخدم",
+  last_name: "تيليجرام",
+  username: "telegram_user"
+};
+
 const $ = s => document.querySelector(s);
 const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ");
 
-if (demo) $("#demoNote").hidden = false;
-
-function avatar(el, cls) {
+function avatar(el) {
   el.innerHTML = "";
   if (user.photo_url) {
     const i = document.createElement("img");
@@ -171,14 +169,15 @@ function avatar(el, cls) {
 }
 function initial() {
   const d = document.createElement("div");
-  d.className = "avatar"; d.textContent = (user.first_name || "?").charAt(0);
+  d.className = "avatar"; d.textContent = (user.first_name || "م").charAt(0);
   return d;
 }
 function chip(id) {
-  const c = $(id); c.innerHTML = "";
+  const c = $(id); if (!c) return;
+  c.innerHTML = "";
   const a = document.createElement("div"); avatar(a);
   const t = document.createElement("div");
-  const n = document.createElement("div"); n.textContent = fullName;
+  const n = document.createElement("div"); n.style.fontWeight = "bold"; n.textContent = fullName;
   const s = document.createElement("small"); s.dir = "ltr"; s.style.textAlign = "right";
   s.textContent = user.username ? "@" + user.username : "";
   t.append(n, s); c.append(a, t);
@@ -194,6 +193,7 @@ $("#vbtn").onclick = () => {
   $("#uname").textContent = fullName;
   $("#uuser").textContent = user.username ? "@" + user.username : "بدون اسم مستخدم";
   $("#ucard").hidden = false; $("#vbtn").hidden = true; $("#vnext").hidden = false;
+  if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred("light");
 };
 $("#vnext").onclick = () => goHome();
 function goHome() { chip("#chip1"); show("home"); }
@@ -203,19 +203,12 @@ $("#stHome").onclick = goHome;
 $("#goStatus").onclick = openStatus;
 $("#refresh").onclick = openStatus;
 
-/* العمر وولي الأمر */
 $("#age").addEventListener("input", e => {
   const v = parseInt(e.target.value, 10);
   $("#guardian").hidden = !(v > 0 && v < 18);
 });
 
-/* التخزين التجريبي */
-const store = {
-  get() { try { return JSON.parse(localStorage.getItem("yq_req") || "null"); } catch (e) { return null; } },
-  set(v) { try { localStorage.setItem("yq_req", JSON.stringify(v)); } catch (e) {} }
-};
-
-/* الإرسال */
+/* إرسال الطلب مباشرة للمجموعة */
 $("#f").addEventListener("submit", async e => {
   e.preventDefault();
   const err = $("#err"); err.textContent = "";
@@ -223,6 +216,7 @@ $("#f").addEventListener("submit", async e => {
   const age = parseInt(v("#age"), 10);
   const supports = [...document.querySelectorAll('input[name="support"]:checked')].map(x => x.value);
   let m = "";
+
   if (!(age >= 6 && age <= 35)) m = "أدخل عمرًا صحيحًا بين 6 و35.";
   else if (age < 18 && (!v("#gname") || !$("#gok").checked)) m = "اسم ولي الأمر وموافقته مطلوبان لمن هم دون 18.";
   else if (!v("#field")) m = "اكتب موهبتك.";
@@ -233,89 +227,96 @@ $("#f").addEventListener("submit", async e => {
   else if (!$("#agree").checked) m = "وافق على الإقرار أولًا.";
   if (m) { err.textContent = m; return; }
 
-  const btn = $("#sbtn"); btn.disabled = true; btn.textContent = "جارٍ الإرسال...";
+  const btn = $("#sbtn"); btn.disabled = true; btn.textContent = "جارٍ إرسال الطلب للمجموعة...";
+
+  const textMsg =
+    `📥 <b>طلب جديد #${user.id}</b>\n` +
+    `👤 <b>المتقدم:</b> ${fullName} ${user.username ? "(@" + user.username + ")" : ""}\n` +
+    `🎂 <b>العمر:</b> ${age} سنة\n` +
+    (age < 18 ? `👨‍👩‍👦 <b>ولي الأمر:</b> ${v("#gname")}\n` : "") +
+    `⭐ <b>الموهبة:</b> ${v("#field")}\n` +
+    `📝 <b>الوصف:</b> ${v("#desc")}\n` +
+    `📈 <b>الخبرة:</b> ${$("#exp").value}\n` +
+    (v("#ach") ? `🏆 <b>الإنجازات:</b> ${v("#ach")}\n` : "") +
+    `🤝 <b>الدعم المطلوب:</b> ${supports.join("، ")}\n` +
+    `🎯 <b>الهدف السنوي:</b> ${v("#goal")}`;
+
   try {
-    if (demo) {
-      store.set({ status: "pending", date: new Date().toLocaleDateString("ar") });
-    } else {
-      const data = {
-        initData: tg ? tg.initData : "",
-        name: fullName, username: user.username || "",
-        age, talent: v("#field"), description: v("#desc"),
-        experience: $("#exp").value, achievements: v("#ach"),
-        supports, goal: v("#goal"),
-        guardian: age < 18 ? v("#gname") : ""
-      };
-      const r = await fetch(CONFIG.API_URL + "/submit", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      if (!r.ok) throw new Error("http " + r.status);
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: GROUP_ID,
+        text: textMsg,
+        parse_mode: "HTML"
+      })
+    });
+
+    const resData = await res.json();
+    if (!resData.ok) {
+      throw new Error(resData.description || "فشل الإرسال للبوت");
     }
-    $("#f").reset(); $("#guardian").hidden = true;
+
+    const today = new Date().toLocaleDateString("ar-EG");
+    localStorage.setItem("yaqeen_request_" + user.id, JSON.stringify({
+      status: "pending",
+      date: today,
+      data: { talent: v("#field"), goal: v("#goal") }
+    }));
+
+    $("#f").reset();
+    $("#guardian").hidden = true;
     if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred("success");
     openStatus();
   } catch (x) {
-    err.textContent = "تعذر إرسال الطلب. تحقق من الاتصال وحاول مرة أخرى.";
-  } finally { btn.disabled = false; btn.textContent = "إرسال الطلب"; }
+    err.textContent = "تعذر إرسال الطلب: " + (x.message || "تحقق من اتصال الإنترنت.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "إرسال الطلب";
+  }
 });
 
-/* الحالة */
-async function getStatus() {
-  if (demo) return store.get() || { status: "none" };
-  const r = await fetch(CONFIG.API_URL + "/status", {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ initData: tg ? tg.initData : "" })
-  });
-  if (!r.ok) throw new Error("http " + r.status);
-  return r.json();
-}
-async function openStatus() {
+function openStatus() {
   chip("#chip3"); show("statusSec");
-  $("#demoCtl").hidden = !demo;
-  const box = $("#stBox"); box.textContent = "جارٍ التحميل...";
-  try { render(await getStatus()); }
-  catch (e) { box.textContent = "تعذر تحميل الحالة. حاول التحديث بعد قليل."; }
-}
-function render(r) {
   const box = $("#stBox"); box.innerHTML = "";
+  const saved = localStorage.getItem("yaqeen_request_" + user.id);
+  const r = saved ? JSON.parse(saved) : { status: "none" };
+
   const d = document.createElement("div");
   const ic = document.createElement("div"); ic.className = "ic";
   const h = document.createElement("h2");
   const p = document.createElement("p");
+
   if (r.status === "pending") {
-    d.className = "status pending"; ic.textContent = "⏳"; h.textContent = "طلبك قيد المراجعة";
-    p.textContent = "سيصلك القرار هنا بعد مراجعة الفريق.";
+    d.className = "status pending"; ic.textContent = "⏳";
+    h.textContent = "طلبك قيد المراجعة";
+    p.textContent = "تم إرسال بطاقة طلبك بنجاح إلى مجموعة المشرفين في تيليجرام.";
   } else if (r.status === "approved") {
-    d.className = "status approved"; ic.textContent = "✅"; h.textContent = "تمت الموافقة على طلبك";
-    p.textContent = "مبروك! سيتواصل معك فريق المركز قريبًا.";
-  } else if (r.status === "rejected") {
-    d.className = "status rejected"; ic.textContent = "❌"; h.textContent = "لم تتم الموافقة على طلبك";
-    p.textContent = "يمكنك تعديل بياناتك وتقديم طلب جديد.";
+    d.className = "status approved"; ic.textContent = "✅";
+    h.textContent = "تمت الموافقة على طلبك";
+    p.textContent = "مبروك! سيتواصل معك فريق مركز يقين قريباً.";
   } else {
-    d.className = "status"; ic.textContent = "📄"; h.textContent = "لا يوجد طلب بعد";
-    p.textContent = "قدّم طلبك الأول ليظهر هنا.";
+    d.className = "status"; ic.textContent = "📄";
+    h.textContent = "لا يوجد طلب بعد";
+    p.textContent = "قدّم طلبك الأول ليظهر هنا للمراجعة.";
   }
+
   d.append(ic, h, p);
-  if (r.status === "rejected") {
-    const b = document.createElement("div"); b.className = "reason";
-    const s = document.createElement("small"); s.textContent = "سبب الرفض";
-    const t = document.createElement("div"); t.textContent = r.reason || "لم يُذكر سبب.";
-    b.append(s, t); d.append(b);
-    const again = document.createElement("button"); again.textContent = "تقديم طلب جديد";
-    again.onclick = () => { chip("#chip2"); show("formSec"); };
-    d.append(again);
-  }
+
   if (r.status === "none") {
-    const go = document.createElement("button"); go.textContent = "تقديم طلب";
+    const go = document.createElement("button"); go.textContent = "تقديم طلب الآن";
     go.onclick = () => { chip("#chip2"); show("formSec"); };
     d.append(go);
   }
-  if (r.date) { const dt = document.createElement("small"); dt.style.color = "var(--hint)"; dt.textContent = "تاريخ الطلب: " + r.date; d.append(dt); }
+
+  if (r.date) {
+    const dt = document.createElement("small"); dt.style.color = "var(--hint)";
+    dt.style.display = "block"; dt.style.marginTop = "8px"; dt.textContent = "تاريخ الطلب: " + r.date;
+    d.append(dt);
+  }
+
   box.append(d);
 }
-$("#dOk").onclick = () => { const r = store.get(); if (r) { r.status = "approved"; store.set(r); openStatus(); } };
-$("#dNo").onclick = () => { const r = store.get(); if (r) { r.status = "rejected"; r.reason = "الملف المرفق غير واضح. أرفق عملًا أوضح يعرض موهبتك."; store.set(r); openStatus(); } };
 </script>
 </body>
 </html>
